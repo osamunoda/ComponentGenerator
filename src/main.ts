@@ -58,7 +58,7 @@ col2.setParent(col1);
 group.addCoulumn(col1);
 group.addCoulumn(col2);
 
-const receiver = new CodeGenerator(["id", "panel_order", "Main text", "Sub Text", "background"], ["Record ID", "order number", "Main text displayed in cnter", "Sub text", "background color or image"])
+const receiver = new CodeGenerator(["id", "panel_order", "Main text", "Sub Text", "background"], ["Record ID", "order number", "Main text displayed in center", "Sub text", "background color or image"])
 
 /** setup template for FileMaker calculation code */
 receiver.setBasicCode(` Let(code=GetLayoutObjectAttribute ( "sortByDrag"; "content" ); 

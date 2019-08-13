@@ -22,14 +22,15 @@ Using calculation with relationship forces us to think context. It also can be a
 
 To solve these problems, I adopt the followings.
 
-1. Use data-scheme implementation (not exporting HTML file to temporary)
+1. Use data-scheme implementation (not exporting HTML file to temporary)  
 Of course, I DON'T insist ALWAYS DO IT. There are cases where exporting HTML file is suitable at the expense of compexity.
 2. Use local variables to communicate between FileMaker and WebViewer
 To make it possible, the following comes.
-3. Use 'Set WebViewer' script step with option 'Go to URL'
+3. Use 'Set WebViewer' script step with option 'Go to URL'  
 Integration code of FileMaker and HTML code are placed there. But it is a hassle for us to go there every time when changing the code.
 And there is a limitation of characters length in the FileMaker calculation formula. So I put those codes as TEXT object in the layout.
 In the 'Go To URL' formula, we can refer those codes using GetLayoutObjectAttribute function and evaluate.
-4. Use ExecuteSQL to get data.It frees us from thinking context.
-5. Use Wizard-way to contruct integration code of FileMaker.(This tool comes here)
+4. Use ExecuteSQL to get data.  
+It frees us from thinking context.
+5. Use Wizard-way to contruct integration code of FileMaker.(This tool comes here)  
 Constructing SQL query string by hand is error-prone.(especially in the multi-bytes environment)

@@ -7,6 +7,7 @@ import CodeGenerator from "./CodeGenerator";
  * methods:
  * get: return input.value
  * table: return tableName
+ * errorCheck: check whether input value is proper or not
  */
 export default class FormItem extends HTMLElement {
     private fieldName: string;/** tableName.fieldName */
@@ -14,19 +15,24 @@ export default class FormItem extends HTMLElement {
     private description: string;
     private color: string;
     private tableName: string;/** tableName */
+    private errorChecker: (value: any) => boolean;
+
     private _shadow: ShadowRoot;
+    private _container: HTMLElement | null;
     private parent: CodeGenerator;/** which this FormItem belongs to */
-    constructor(fieldName: string, description: string, parent: CodeGenerator, color?: string) {
+    constructor(fieldName: string, description: string, parent: CodeGenerator, checker: (value: any) => boolean, color?: string) {
         super();
         this.fieldName = fieldName;
         this.description = description;
+        this.errorChecker = checker;
+
         this.color = color || "black";
         this.tableName = "";
         this.parent = parent;
         const shadow = this.attachShadow({ mode: "closed" });
         shadow.innerHTML = `<style>
         div{padding:5px}
-        .container{border-bottom:1px solid}
+        .container{border-bottom:1px solid #ccc}
         </style>
         <div class="container">
             <div>${this.fieldName}<span>( ${this.description} )</span></div>
@@ -35,11 +41,20 @@ export default class FormItem extends HTMLElement {
         `;
         this._shadow = shadow;
         this._input = shadow.querySelector("input");
+        this._container = shadow.querySelector(".container");
+    }
+    errorCheck() {
+        if (this._input && !this._input.value && this._container) {
+            const isError = this.errorChecker(this._input.value);
+            if (isError) {
+                this._container.style.color = "red";
+            }
+            return isError;
+        } else {
+            return false;
+        }
     }
     get() {
-        if (this._input && !this._input.value) {
-            this._input.style.color = "red";
-        }
         return this._input ? this._input.value : "";
     }
     table() {
@@ -61,11 +76,15 @@ export default class FormItem extends HTMLElement {
                     this._input.value = e.dataTransfer.getData("Text");
                     this.tableName = this._input.value.split(".").length === 2 ? this._input.value.split(".")[0] : "";
                     this.parent.setTable(this.tableName);
+                    if (this._container) {
+                        this._container.style.color = this.color;
+                    }
                 }
             }
             this._input.onchange = (e) => {
-                if (this._input && this._input.value) {
-                    this._input.style.color = this.color;
+                console.log("alert input change")
+                if (!this.errorCheck() && this._container) {
+                    this._container.style.color = this.color;
                 }
             }
         }

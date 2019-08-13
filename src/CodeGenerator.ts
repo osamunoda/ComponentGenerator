@@ -57,12 +57,15 @@ export default class CodeGenerator extends HTMLElement {
             border-radius:4px;
             box-sizing:border-box;
         }
+        input{
+            margin:4px;
+            box-sizing:border-box;
+        }
         textarea{
             opacity:0;
             height:0;
-        }
-        input{
-            margin:5px;
+            margin:0;
+            box-sizing:border-box;
         }
         #btn{
             display:flex;
@@ -72,7 +75,10 @@ export default class CodeGenerator extends HTMLElement {
             border:2px solid;
             padding:1rem;
             border-radius:6px;
-            
+            box-sizing:border-box;
+        }
+        #optionsArea{
+            margin:4px 0;
         }
         #btn:hover{
             background:pink;
@@ -81,9 +87,8 @@ export default class CodeGenerator extends HTMLElement {
         <div id="container">
         </div>
         <div id="optionsArea"></div>
-        
-        <textarea id="code" contentEditable tabIndex="-1"></textarea>
         <div id="btn">Get Code</div>
+        <textarea id="code" contentEditable tabIndex="-1"></textarea>
         `;
         this._shadow = shadow;
         this._code = shadow.querySelector("#code") || null;
@@ -93,14 +98,14 @@ export default class CodeGenerator extends HTMLElement {
     }
     connectedCallback() {
         this.fields.forEach((field, index) => {
-            const formItem = new FormItem(field, this.descriptions[index], this);
+            const formItem = new FormItem(field, this.descriptions[index], this, falsy);
             if (this._container) {
                 this._container.appendChild(formItem);
                 this.items.push(formItem);
             }
         })
-        const orderBy = new FormItem("orderBy", "sort order", this);
-        const where = new FormItem("where", "filter", this);
+        const orderBy = new FormItem("orderBy", "sort order", this, falsy);
+        const where = new FormItem("where", "filter", this, falsy);
         this.orderBy = orderBy;
         this.where = where;
         if (this._container) {
@@ -109,7 +114,7 @@ export default class CodeGenerator extends HTMLElement {
         }
         if (this.options.length) {
             this.options.forEach((option, index) => {
-                const formItem = new FormItem(option, this.optionDescriptions[index], this);
+                const formItem = new FormItem(option, this.optionDescriptions[index], this, falsy);
                 if (this._optionsArea) {
                     this._optionsArea.appendChild(formItem);
                 }
@@ -121,7 +126,10 @@ export default class CodeGenerator extends HTMLElement {
         }
         if (this._btn) {
             this._btn.onmouseup = () => {
-                if (!this.checkItems()) return;
+                if (!this.checkItems()) {
+                    alert("There are errors in input values");
+                    return;
+                }
                 if (this._code) {
                     this._code.value = this.basicCode.replace("__SQLSTRING__", this.getSQL());
                     this._code.value = this._code.value.replace("__OPTIONS__", this.getOptions());
@@ -142,10 +150,16 @@ export default class CodeGenerator extends HTMLElement {
     checkItems() {
         let result = true;
         this.items.forEach(item => {
-            if (!item.get()) {
+            if (item.errorCheck()) {
                 result = false;
             }
         });
+        if (this.orderBy && this.orderBy.errorCheck()) {
+            result = false;
+        }
+        if (this.errorOptions()) {
+            result = false;
+        }
         return result;
     }
     getFields() {
@@ -189,11 +203,12 @@ export default class CodeGenerator extends HTMLElement {
     }
     getWhere() {
         //alert("where: this.where");
-        return this.where ? (" " + this.where.get()) : "";
+        const value = (this.where && this.where.get()) ? (" " + this.where.get()) : "";
+        return value;
     }
     getOrderBy() {
-        //alert("orderby:" + !this.orderBy ? "" : (" ORDER BY " + this.orderBy )
-        return this.orderBy ? ` ORDER BY ${this.quote(this.orderBy.get())}` : "";
+        const value = (this.orderBy && this.orderBy.get()) ? ` ORDER BY ${this.quote(this.orderBy.get())}` : "";
+        return value;
     }
     quote(text: string) {
         const arr = text.split(".");
@@ -219,12 +234,24 @@ export default class CodeGenerator extends HTMLElement {
         this.options.push(option);
         this.optionDescriptions.push(description || "");
     }
-
+    errorOptions() {
+        let result = false;
+        if (this._optionsArea) {
+            const optionItems = Array.from<FormItem>(this._optionsArea.querySelectorAll("form-item"));
+            optionItems.forEach(item => {
+                if (item.errorCheck()) {
+                    result = true;
+                }
+            })
+        }
+        return result;
+    }
     attributeChangedCallback(attr: string, oldValue: string, newValue: string) {
 
     }
 }
-function fmpurl(scriptName: string, param: string) {
-    location.href = `fmp://$/__DB__?script=${scriptName}&param=${param}`
+function falsy(value: any) {
+    console.log("falsy", value);
+    return value === null || value === undefined || value === ""
 }
 customElements.define("code-generator", CodeGenerator);
