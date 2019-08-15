@@ -9,6 +9,9 @@ export default class XMLReceiver extends HTMLElement {
     private _shadow: ShadowRoot;
     private _receiver: HTMLElement | null;/** Drop Area */
     private _frame: HTMLElement | null;/** All Area */
+    private toTable: Map<string, string>;/** TO - Table map */
+    private toFields: Map<string, string[]>;/** TO - Fields map */
+    private tableFields: Map<string, string[]>;/** Table - Fields map */
     private link: ListColumn;
     constructor(link: ListColumn) {
         super();
@@ -49,6 +52,9 @@ export default class XMLReceiver extends HTMLElement {
         this._shadow = shadow;
         this._frame = shadow.querySelector("#frame");
         this._receiver = shadow.querySelector("#receiver");
+        this.toTable = new Map();
+        this.toFields = new Map();
+        this.tableFields = new Map();
     }
     connectedCallback() {
         if (this._receiver) {
@@ -70,7 +76,28 @@ export default class XMLReceiver extends HTMLElement {
                         const result = e.target.result;
                         const parser = new DOMParser();
                         this.xml = parser.parseFromString(result, "text/xml");
-                        this.xml.querySelectorAll("BaseTable").forEach(table => console.log(table.getAttribute("name")));
+                        /** TOName - TableName map*/
+                        this.xml.querySelectorAll("AddAction > TableOccurrenceCatalog > TableOccurrence").forEach(to => {
+                            let tableName: string = "";
+                            const table = to.querySelector("BaseTableReference");
+                            if (table) {
+                                tableName = table.getAttribute("name") || "";
+                            }
+                            this.toTable.set(to.getAttribute("name") || "", tableName);
+                        });
+                        /** TOName-Fields map, TableName-Fields map */
+                        this.xml.querySelectorAll("AddAction > FieldsForTables > FieldCatalog > TableOccurrenceReference").forEach(table => {
+                            const fields: string[] = [];
+                            if (table.parentNode) {
+                                table.parentNode.querySelectorAll("ObjectList > Field").forEach(field => {
+                                    fields.push(field.getAttribute("name") || "")
+                                });
+                            }
+                            const toName = table.getAttribute("name") || "";
+                            this.toFields.set(toName, fields);
+                            const tableName = this.toTable.get(toName) || "";
+                            this.tableFields.set(tableName, fields);
+                        });
                         this.link.setItems(this.getTables().join(","));
                         if (this._receiver) {
                             this._receiver.style.transform = "scale(10)";
@@ -89,20 +116,11 @@ export default class XMLReceiver extends HTMLElement {
         }
     }
     getTables() {
-        const tables: string[] = [];
-        this.xml.querySelectorAll("BaseTable").forEach(table => {
-            tables.push(table.getAttribute("name") || "")
-        });
-        return tables;
+        const TOs = Array.from<string>(this.toFields.keys());
+        return TOs;
     }
     getFields(tableName: string) {
-        const fields: string[] = [];
-        const table = this.xml.querySelector("FieldCatalog>TableOccurrenceReference[name=" + tableName + "]");
-        if (table && table.parentNode) {
-            table.parentNode.querySelectorAll("Field").forEach(item => {
-                fields.push(item.getAttribute("name") || "");
-            })
-        }
+        const fields = this.toFields.get(tableName);
         return fields;
     }
     getXML() {

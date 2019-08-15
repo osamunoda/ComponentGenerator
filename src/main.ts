@@ -32,10 +32,10 @@ if (!FM_MODE) {
  *  xmlReceiver: XMLReceiver whch receives dropped XML file and parse, then extract tables and fields of the file
  */
 
-const col1 = new ListColumn("TOs", 200, 600, status.tables.split(","), (e: MouseEvent) => {
+const col1 = new ListColumn("TOs", 200, 680, status.tables.split(","), (e: MouseEvent) => {
     if (e.target && e.target instanceof HTMLElement) {
         col1.setSelected(e.target);
-        const fields = xmlReceiver.getFields(e.target.innerText);
+        const fields = xmlReceiver.getFields(e.target.innerText) || [];
         if (fields.length) {
             col2.setItems(fields.join(","))
         }
@@ -44,7 +44,7 @@ const col1 = new ListColumn("TOs", 200, 600, status.tables.split(","), (e: Mouse
     col2.setParent(col1);
     //FM:col2.dataset.items = status.fields;
 }, false, true, status.selectedTable, status.scroll);
-const col2 = new ListColumn("Fields", 200, 600, status.fields.split(','), (e: MouseEvent) => {
+const col2 = new ListColumn("Fields", 200, 680, status.fields.split(','), (e: MouseEvent) => {
     if (e.target && e.target instanceof HTMLElement) {
         // Do nothing
     }
@@ -65,6 +65,7 @@ receiver.setBasicCode(` Let(code=GetLayoutObjectAttribute ( "sortByDrag"; "conte
 Substitute ( code; ["__SQLRESULT__"; ExecuteSQL("__SQLSTRING__"; ""; "],[")]; ["__SORTDB__"; Get(FileName)];["__SORTSCROLL__";$scroll]; ["__ORDER__"; $panelOrder]__OPTIONS__)
 )`);
 receiver.setOptions("columns", "Number of columns");
+receiver.setOptions("cardHeight", "height of card");
 
 const xmlReceiver = new XMLReceiver(col1);
 
