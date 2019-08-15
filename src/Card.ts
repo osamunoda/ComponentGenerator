@@ -106,15 +106,12 @@ export default class DraggableCard extends HTMLElement {
     }
 
     connectedCallback() {
-        //console.log("connectedCallback", this._text1)
         this.dataset.text1 = this._text1;
-        //this.setAttribute("text1", this._text1);
         this.dataset.text2 = this._text2;
         this.dataset.background = this._background;
         this.dataset.width = this._width + "";
         this.dataset.height = this._height + "";
         this.setAttribute("id", this._id);
-        ////console.log("connectedCallback end")
     }
 }
 customElements.define("draggable-card", DraggableCard);
