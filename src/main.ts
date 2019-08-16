@@ -32,7 +32,7 @@ if (!FM_MODE) {
  *  xmlReceiver: XMLReceiver whch receives dropped XML file and parse, then extract tables and fields of the file
  */
 
-const col1 = new ListColumn("TOs", 200, 680, status.tables.split(","), (e: MouseEvent) => {
+const col1 = new ListColumn("TOs", 200, 450, status.tables.split(","), (e: MouseEvent) => {
     if (e.target && e.target instanceof HTMLElement) {
         col1.setSelected(e.target);
         const fields = xmlReceiver.getFields(e.target.innerText) || [];
@@ -44,7 +44,7 @@ const col1 = new ListColumn("TOs", 200, 680, status.tables.split(","), (e: Mouse
     col2.setParent(col1);
     //FM:col2.dataset.items = status.fields;
 }, false, true, status.selectedTable, status.scroll);
-const col2 = new ListColumn("Fields", 200, 680, status.fields.split(','), (e: MouseEvent) => {
+const col2 = new ListColumn("Fields", 200, 450, status.fields.split(','), (e: MouseEvent) => {
     if (e.target && e.target instanceof HTMLElement) {
         // Do nothing
     }
@@ -66,8 +66,11 @@ Substitute ( code; ["__SQLRESULT__"; ExecuteSQL("__SQLSTRING__"; ""; "],[")]; ["
 )`);
 receiver.setOptions("columns", "Number of columns");
 receiver.setOptions("cardHeight", "height of card");
+receiver.setOptions("textColor", "color of text");
+receiver.setOptions("enableSlide", "horizontal slide in one column: true/false");
 
-const xmlReceiver = new XMLReceiver(col1);
+
+
 
 const root = document.getElementById("root");
 if (root) {
@@ -75,5 +78,6 @@ if (root) {
     root.appendChild(receiver);
 }
 /** Hide over root */
+const xmlReceiver = new XMLReceiver(col1);
 document.body.appendChild(xmlReceiver);
 

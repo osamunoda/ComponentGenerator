@@ -50,12 +50,16 @@ export default class CodeGenerator extends HTMLElement {
         :host{
             font:sans-serif;
             color:rgba(0,0,0,0.9);
+            width:400px;
+            display:flex;
         }
-        div{
+        .top{
             width:200px;
             border:3px solid;
             border-radius:4px;
             box-sizing:border-box;
+            flex:1;
+            position:relative;
         }
         input{
             margin:4px;
@@ -71,11 +75,14 @@ export default class CodeGenerator extends HTMLElement {
             display:flex;
             justify-content:center;
             align-items:center;
-            width:200px;
+            width:80%;
             border:2px solid;
             padding:1rem;
             border-radius:6px;
             box-sizing:border-box;
+            position:absolute;
+            left:10%;
+            bottom:5px;
         }
         #optionsArea{
             margin:4px 0;
@@ -84,11 +91,13 @@ export default class CodeGenerator extends HTMLElement {
             background:pink;
         }
         </style>
-        <div id="container">
+        <div id="container" class="top">
         </div>
-        <div id="optionsArea"></div>
-        <div id="btn">Get Code</div>
-        <textarea id="code" contentEditable tabIndex="-1"></textarea>
+        <div class="top">
+            <div id="optionsArea"></div>
+            <div id="btn">Get Code</div>
+            <textarea id="code" contentEditable tabIndex="-1"></textarea>
+        </div>
         `;
         this._shadow = shadow;
         this._code = shadow.querySelector("#code") || null;
@@ -202,8 +211,8 @@ export default class CodeGenerator extends HTMLElement {
         return `\\\"${this.tableName}\\\"`;
     }
     getWhere() {
-        //alert("where: this.where");
-        const value = (this.where && this.where.get()) ? (" " + this.where.get()) : "";
+        //where condition: panelOrder > 0
+        const value = (this.orderBy && this.orderBy.get()) ? ` WHERE ${this.quote(this.orderBy.get())} > 0` : "";
         return value;
     }
     getOrderBy() {
