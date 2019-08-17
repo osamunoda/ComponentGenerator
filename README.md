@@ -3,7 +3,9 @@
 This is a tool for constructing integration code of SortByDrag3(WebViewer Component) in the browser( Safari/Chrome not IE ). 
 index.html and bundle.js in public are main files. When usig as a single file, merge bundle.js into index.html.
 
-HOW TO USE: https://twitter.com/sam_oda/status/1160280200120172544
+HOW TO USE: https://twitter.com/sam_oda/status/1160280200120172544  
+
+SortByDrag3: https://github.com/osamunoda/SortByDrag3  
 *********************************************************************
 
 What is the ideal way to implement WebViewer component?
