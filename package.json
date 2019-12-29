@@ -11,15 +11,15 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/jest": "^24.0.15",
+    "@types/jest": "^24.0.25",
     "awesome-typescript-loader": "^5.2.1",
-    "css-loader": "^3.1.0",
-    "jest": "^24.8.0",
+    "css-loader": "^3.4.0",
+    "jest": "^24.9.0",
     "source-map-loader": "^0.2.4",
-    "style-loader": "^0.23.1",
-    "ts-jest": "^24.0.2",
-    "typescript": "^3.5.3",
-    "webpack": "^4.37.0",
-    "webpack-cli": "^3.3.6"
+    "style-loader": "^1.1.2",
+    "ts-jest": "^24.2.0",
+    "typescript": "^3.7.4",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
   }
 }
